@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Cumpleaños</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --pink: #f7c6d9;
+  --pink-dark: #e79ab5;
+  --purple: #6b5b95;
+  --night: #1b1436;
+  --paper: #f3ecd8;
+  --text-dark: #2b2b2b;
+  --text-light: #f7f4ee;
+  --btn-bg: #f0e6d2;
+  --btn-border: #2b2b2b;
+  --radius: 14px;
+  --font-title: 'Press Start 2P', monospace;
+  --font-body: 'Press Start 2P', monospace;
+  --font-pixel: 'Press Start 2P', monospace;
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  margin:0; padding:0; height:100%;
+  font-family: var(--font-body);
+  overflow:hidden;
+  background:var(--night);
+}
+
+#app{
+  position:relative;
+  width:100%;
+  height:100vh;
+  height:100dvh;
+  max-width:520px;
+  margin:0 auto;
+  overflow:hidden;
+  background:var(--night);
+  box-shadow:0 0 40px rgba(0,0,0,.5);
+}
+
+.scene{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:32px 24px;
+  text-align:center;
+  color:var(--text-light);
+
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+
+  animation: fadeIn .45s ease;
+}
+.scene.active{ display:flex; }
+
+@keyframes fadeIn{
+  from{ opacity:0; transform:scale(1.02); }
+  to{ opacity:1; transform:scale(1); }
+}
+
+.scene::before{
+  content:"";
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.25);
+  z-index:0;
+  pointer-events:none;
+}
+.scene > *{ position:relative; z-index:1; }
+
+#scene-intro { background-image: url('images/holou.jpg'); background-size: cover; background-position: center; }
+#scene-denied { background-image: url('images/hollow.png'); background-size: cover; background-position: center; }
+#scene-hub { background-image: url('images/fondo hollow.jpg'); background-size: cover; background-position: center; }
+#scene-letter { background-image: url('images/holow.jpg'); background-size: cover; background-position: center; }
+#scene-songs { background-image: url('images/fondohollow.jpg'); background-size: cover; background-position: center; }
+#scene-pokeball-intro { background-image: url('images/night.jpg'); background-size: cover; background-position: center; }
+#scene-pokeball-wrong { background-image: url('images/coso.jpg'); background-size: cover; background-position: center; }
+#scene-pokeball-found { background-image: url('images/a.png'); background-size: cover; background-position: center; }
+#scene-pokemon-card { background-image: url('images/i.jpg'); background-size: cover; background-position: center; }
+#scene-tickets-rules { background-image: url('images/tic.jpg'); background-size: cover; background-position: center; }
+#scene-tickets { background-image: url('images/pen.png'); background-size: cover; background-position: center; }
+#scene-denied-tickets { background-image: url('images/hollow.png'); background-size: cover; background-position: center; }
+#scene-final { background-image: url('images/ult.png'); background-size: cover; background-position: center; }
+
+.topbar{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+  min-height:28px;
+}
+.back-btn{
+  background:none; border:none; color:var(--text-light);
+  font-size:15px; cursor:pointer; opacity:.85;
+  font-family: var(--font-body);
+}
+.back-btn:hover{ opacity:1; }
+.back-btn:disabled{ visibility:hidden; }
+
+.dots{
+  display:flex; gap:8px;
+}
+.dot{
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(255,255,255,.25);
+  transition:.3s;
+}
+.dot.done{ background:var(--pink-dark); }
+
+.scene h1{
+  font-family: var(--font-title);
+  font-size:26px;
+  line-height:1.3;
+  margin:8px 0 6px;
+  font-weight:400;
+}
+.scene h2{
+  font-family: var(--font-pixel);
+  font-size:15px;
+  letter-spacing:.5px;
+  margin:0 0 22px;
+  opacity:.9;
+}
+.scene p.body-text{
+  font-size:15px;
+  line-height:1.5;
+  max-width:380px;
+  margin: 6px 0 22px;
+}
+
+.choice-row{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:auto;
+  margin-bottom: 12px;
+}
+.paper-btn{
+  background:var(--btn-bg);
+  color:var(--text-dark);
+  border:2px solid var(--btn-border);
+  border-radius:4px;
+  padding:12px 22px;
+  font-family: var(--font-pixel);
+  font-size:14px;
+  letter-spacing:.5px;
+  text-decoration:underline;
+  cursor:pointer;
+  box-shadow:3px 3px 0 rgba(0,0,0,.35);
+  transition: transform .15s ease;
+}
+.paper-btn:hover{ transform: translateY(-2px); }
+.paper-btn:active{ transform: translateY(1px); box-shadow:1px 1px 0 rgba(0,0,0,.35); }
+.paper-btn.secondary{ opacity:.85; }
+
+.gift-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:18px;
+  width:100%;
+  max-width:360px;
+  margin: 10px 0 auto;
+}
+.gift-card{
+  background:rgba(255,255,255,.08);
+  border:2px solid rgba(255,255,255,.35);
+  border-radius:var(--radius);
+  padding:18px 10px;
+  cursor:pointer;
+  transition: transform .15s ease, background .2s ease;
+  position:relative;
+}
+.gift-card:hover{ transform: translateY(-3px); background:rgba(255,255,255,.14); }
+.gift-card .icon{
+  font-size:36px;
+  display:block;
+  margin-bottom:8px;
+}
+.gift-card .label{
+  font-family: var(--font-pixel);
+  font-size:12px;
+  letter-spacing:.5px;
+}
+.gift-card.completed::after{
+  content:"✓";
+  position:absolute; top:6px; right:10px;
+  color:#8be28b; font-weight:bold;
+}
+
+.hub-footer-btn{
+  margin-top:16px;
+}
+
+.envelope{
+  width:220px; height:150px;
+  background: var(--paper);
+  border-radius:6px;
+  position:relative;
+  cursor:pointer;
+  margin: 30px auto;
+  box-shadow:0 8px 20px rgba(0,0,0,.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:40px;
+  transition: transform .2s ease;
+}
+.envelope:hover{ transform: scale(1.04); }
+
+.letter-paper{
+  background: var(--paper);
+  color: var(--text-dark);
+  border-radius:6px;
+  padding:22px 20px;
+  max-width:380px;
+  max-height:48vh;
+  overflow-y:auto;
+  text-align:left;
+  font-family: 'Segoe Script','Brush Script MT', cursive, var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  margin-bottom:18px;
+  display:none;
+}
+.letter-paper.show{ display:block; }
+
+.song-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:14px;
+  width:100%;
+  max-width:440px;
+  margin: 6px 0 auto;
+}
+.song-card{
+  background:rgba(255,255,255,.08);
+  border:2px solid rgba(255,255,255,.25);
+  border-radius:10px;
+  overflow:hidden;
+  text-align:left;
+  cursor:pointer;
+  transition:.2s;
+}
+.song-card:hover{ background:rgba(255,255,255,.16); }
+.song-cover{
+  width:100%; aspect-ratio:21/9;
+  background: linear-gradient(135deg,#555,#222);
+  display:flex; align-items:center; justify-content:center;
+  font-size:26px;
+}
+.song-info{ padding:10px 10px 4px; }
+.song-title{ font-size:11px; font-weight:bold; margin-bottom:4px; }
+.song-artist{ font-size:9.5px; opacity:.75; margin-bottom:6px; }
+.song-note{ font-size:9.5px; opacity:.85; padding:0 10px 10px; font-style:italic; }
+
+.pokeball-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:16px;
+  width:100%;
+  max-width:340px;
+  margin: 10px 0 auto;
+}
+.pokeball{
+  width:100%; aspect-ratio:1/1;
+  border-radius:50%;
+  cursor:pointer;
+  background:
+    radial-gradient(circle at center, #fff 0 14%, #222 14% 18%, transparent 18%),
+    linear-gradient(#e63946 0 50%, #fff 50% 100%);
+  border:3px solid #222;
+  transition: transform .15s ease;
+}
+.pokeball:hover{ transform: scale(1.06) rotate(-4deg); }
+.pokeball.tried{
+  opacity:.3;
+  pointer-events:none;
+}
+
+.big-pokeball{
+  width:160px; height:160px;
+  margin:30px auto;
+  border-radius:50%;
+  cursor:pointer;
+  background:
+    radial-gradient(circle at center, #fff 0 16%, #222 16% 20%, transparent 20%),
+    linear-gradient(#e63946 0 50%, #fff 50% 100%);
+  border:4px solid #222;
+  animation: pulse 1.4s infinite ease-in-out;
+}
+@keyframes pulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+
+.poke-card{
+  width:260px;
+  background: linear-gradient(160deg,#fdf6e3,#f3e2b3);
+  border:6px solid #d8b34a;
+  border-radius:14px;
+  padding:14px;
+  margin: 10px auto 20px;
+  color:var(--text-dark);
+  box-shadow:0 10px 26px rgba(0,0,0,.45);
+}
+.poke-card-photo{
+  width:100%; aspect-ratio:4/3;
+  background-image: url('images/silson.jpg');
+  background-size: cover;
+  background-position: center;
+  border-radius:8px;
+  margin-bottom:10px;
+}
+.poke-card-title{
+  font-weight:bold; font-size:14px; margin-bottom:4px;
+}
+.poke-card-text{
+  font-size:12.5px; line-height:1.4;
+}
+
+.rules-list{
+  text-align:left;
+  max-width:340px;
+  font-size:14px;
+  line-height:1.7;
+  margin-bottom:24px;
+}
+.ticket-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:14px;
+  width:100%;
+  max-width:380px;
+  margin:6px 0 auto;
+}
+.ticket{
+  background: var(--paper);
+  color: var(--text-dark);
+  border:2px dashed var(--text-dark);
+  border-radius:8px;
+  padding:14px 8px;
+  cursor:pointer;
+  font-size:12.5px;
+  font-weight:bold;
+  transition:.2s;
+  position:relative;
+}
+.ticket:hover{ transform: translateY(-2px); }
+.ticket.selected{
+  opacity:1;
+  border-color: var(--pink-dark);
+  background: var(--pink);
+  transform: scale(1.04);
+  box-shadow:0 0 0 3px rgba(231,154,181,.5);
+}
+.ticket.faded{
+  opacity:.35;
+  pointer-events:none;
+}
+.ticket .ticket-label{ display:block; margin-bottom:4px; font-size:10px; opacity:.7; font-weight:normal;}
+
+@media (max-width:380px){
+  .scene h1{ font-size:22px; }
+  .gift-grid, .song-grid, .ticket-grid{ max-width:100%; }
+}
+
+/* ============================================================
+   BOTÓN DE MÚSICA
+   ============================================================ */
+#mute-btn{
+  position:absolute;
+  top:14px;
+  right:14px;
+  z-index:20;
+  background:rgba(0,0,0,.45);
+  border:none;
+  color:var(--text-light);
+  width:38px; height:38px;
+  border-radius:50%;
+  font-size:17px;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+#mute-btn:hover{ background:rgba(0,0,0,.65); }
+.confetti-piece{
+  position:absolute;
+  top:-10%;
+  font-size:20px;
+  pointer-events:none;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  z-index:5;
+}
+@keyframes fall{
+  0%{
+    transform: translateY(0) rotate(0deg);
+    opacity:1;
+  }
+  100%{
+    transform: translateY(700px) rotate(360deg);
+    opacity:.85;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- 👉 Pon aquí el nombre de tu archivo de música (mp3). Debe estar en una carpeta "audio/" al lado de este archivo. -->
+  <audio id="bg-music" src="audio/cancion.mp3" loop></audio>
+  <button id="mute-btn" onclick="toggleMusic()">🔊</button>
+
+  <section class="scene active" id="scene-intro">
+    <div class="topbar">
+      <button class="back-btn" disabled>←</button>
+      <div class="dots"></div>
+    </div>
+    <h1>Feliz cumpleaños mi principito</h1>
+    <h2 style="margin-top:20px;">¿Quieres ver tu regalo?</h2>
+    <div class="choice-row" style="margin-top:40px;">
+      <button class="paper-btn" onclick="go('scene-hub')">Empezar</button>
+      <button class="paper-btn secondary" onclick="go('scene-denied')">Denegar</button>
+    </div>
+  </section>
+
+  <section class="scene" id="scene-denied">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <h1 style="margin-top:60px;">Va porfi, inténtalo...</h1>
+    <div class="choice-row" style="margin-top:40px;">
+      <button class="paper-btn" onclick="go('scene-hub')">Está bien</button>
+    </div>
+  </section>
+
+  <section class="scene" id="scene-hub">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots" id="hub-dots"></div>
+    </div>
+    <h2 style="margin-bottom:4px;">Elige un regalo</h2>
+    <p class="body-text" style="margin-bottom:14px;">Ábrelos todos para llegar al final ✨</p>
+    <div class="gift-grid">
+      <div class="gift-card" id="card-letter" onclick="openGift('letter')">
+        <span class="icon"><img src="images/carta.png" alt="carta" style="width:100%; max-width:40px;"></span>
+        <span class="label">REGALO 1</span>
+      </div>
+      <div class="gift-card" id="card-songs" onclick="openGift('songs')">
+        <span class="icon"><img src="images/musik.png" alt="carta" style="width:100%; max-width:40px;"></span>
+        <span class="label">REGALO 2</span>
+      </div>
+      <div class="gift-card" id="card-pokeball" onclick="openGift('pokeball')">
+        <span class="icon"><img src="images/amuleto.png" alt="carta" style="width:100%; max-width:40px;"></span>
+        <span class="label">REGALO 3</span>
+      </div>
+      <div class="gift-card" id="card-tickets" onclick="openGift('tickets')">
+        <span class="icon"><img src="images/tik.png" alt="carta" style="width:100%; max-width:40px;"></span>
+        <span class="label">REGALO 4</span>
+      </div>
+    </div>
+    <button class="paper-btn hub-footer-btn" id="finish-btn" style="display:none;" onclick="go('scene-final')">
+      Finalizar
+    </button>
+  </section>
+
+  <section class="scene" id="scene-letter">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <h2>Pulsa el sobre</h2>
+    <div class="envelope" id="envelope" onclick="openLetter()">
+    <img src="images/carta.png" alt="sobre" style="width:70%;">
+    </div>
+    <div class="letter-paper" id="letter-text">
+      Antes de Empezar:<br>
+      <br>
+      𝑯𝒂𝒚 𝒓𝒆𝒈𝒂𝒍𝒐𝒔 𝒒𝒖𝒆 𝒔𝒆 𝒂𝒃𝒓𝒆𝒏 𝒄𝒐𝒏 𝒍𝒂𝒔 𝒎𝒂𝒏𝒐𝒔, 𝒑𝒆𝒓𝒐 𝒉𝒂𝒚 𝒐𝒕𝒓𝒐𝒔 𝒒𝒖𝒆 𝒔𝒆 𝒂𝒃𝒓𝒆𝒏 𝒄𝒐𝒏 𝒆𝒍 𝒄𝒐𝒓𝒂𝒛ó𝒏.<br>
+      <br>
+      *𝑴𝒊 𝒑𝒓𝒊𝒏𝒄𝒊𝒑𝒊𝒕𝒐 𝒍𝒊𝒏𝒅𝒐 💞*<br>
+      <br>
+      Si estás leyendo esto significa que acabas de descubrir una de las sorpresas que preparé para ti. Y antes de que hagas cualquier cosa, quiero pedirte un favor muy pequeñito.<br>
+      <br>
+      No tengas afán.<br>
+      <br>
+      Quiero que disfrutes esta aventura con calma. Que sonrías cuando algo te haga gracia, que te emociones cuando encuentres un detalle escondido y que recuerdes, durante todo el juego, que nada de esto está aquí por casualidad.<br>
+      <br>
+      Cada palabra, cada idea, cada detalle y cada pequeño esfuerzo tienen algo en común: *Todos fueron hechos pensando en ti.*<br>
+      <br>
+      Hoy es un día muy especial.<br>
+      <br>
+      Hace diecisiete años nació un niño que todavía no conocía, pero que un día se convertiría en la persona que más calma le da a mi corazón.<br>
+      <br>
+      Hace diecisiete años nació el niño que hoy admiro profundamente, el que me hace reír hasta que me duele la barriga, el que me llena la carita de besitos, el que acomoda su cabello de una forma que todavía logra ponerme nerviosa y el que, sin darse cuenta, terminó convirtiéndose en mi lugar seguro. ❤️‍🩹<br>
+      <br>
+      Y la verdad... qué suerte tengo de poder celebrar hoy el día en que llegaste al mundo.<br>
+      <br>
+      Todavía me parece increíble pensar que todo empezó con una mirada en el colegio. Una mirada que, en ese momento, no significó nada... o al menos eso creíamos. Después pasó un año entero hasta que comenzamos a hablar de verdad, y jamás imaginé que aquella conversación terminaría convirtiéndose en una de las decisiones más bonitas de mi vida.<br>
+      <br>
+      Si ese día alguien me hubiera dicho que terminaría escribiéndote cartas, preparando sorpresas y hasta aprendiendo cosas nuevas solo para verte feliz, probablemente no lo habría creído.<br>
+      <br>
+      Pero aquí estoy.<br>
+      <br>
+      Y no cambiaría absolutamente nada.<br>
+      <br>
+      Hay algo que quiero confesarte.<br>
+      <br>
+      Mientras hacía este regalo hubo momentos en los que me desesperé porque algo no salía como quería. Me equivoqué varias veces, tuve que empezar de nuevo algunas cosas y, más de una vez, pensé: "Ojalá le guste de verdad"<br>
+      <br>
+      Pero cada vez que aparecía ese pensamiento, también aparecía otro mucho más fuerte.<br>
+      <br>
+      "Vale la pena, porque es para él."<br>
+      <br>
+      Y seguía.<br>
+      <br>
+      Porque cuando se trata de ti, siempre siento que cualquier esfuerzo vale completamente la pena.<br>
+      <br>
+      No hice este juego para que dijeras: Qué bonito quedó."<br>
+      <br>
+      Lo hice porque quería regalarte una experiencia que te hiciera sentir todo el amor que llevo en el corazón.<br>
+      <br>
+      Quería que, aunque fuera por un ratito, olvidaras todo lo demás y simplemente disfrutaras.<br>
+      <br>
+      Porque amo verte feliz.<br>
+      <br>
+      Muchísimo.<br>
+      <br>
+      Creo que ni siquiera te imaginas cuánto.<br>
+      <br>
+      Cuando sonríes, cuando hablas emocionado de un partido de baloncesto, cuando me cuentas un sueño que quieres cumplir o cuando simplemente te ríes por cualquier bobada... automáticamente yo también sonrío.<br>
+      <br>
+      Tu felicidad tiene esa extraña costumbre de convertirse en la mía.<br>
+      <br>
+      Y esa es una de las cosas más bonitas que me ha regalado enamorarme de ti.<br>
+      <br>
+      También quiero darte las gracias.<br>
+      <br>
+      Gracias por cada abrazo que me hace sentir protegida.<br>
+      <br>
+      Gracias por cada beso en mi mano.<br>
+      <br>
+      Gracias por cada beso en mi frente y por esos ataques de besitos que siempre terminan haciéndome reír.<br>
+      <br>
+      Gracias por tenerme paciencia cuando me cuesta expresar lo que siento.<br>
+      <br>
+      No sé si alguna vez te has dado cuenta, pero a veces mi corazón siente muchísimas cosas al mismo tiempo y mi cabeza no encuentra la forma de convertirlas en palabras.<br>
+      <br>
+      No es porque no confíe en ti.<br>
+      <br>
+      Es todo lo contrario.<br>
+      <br>
+      Es porque todavía estoy aprendiendo a abrir mi corazón sin miedo.<br>
+      <br>
+      Y aun así, incluso en esos silencios, tú sigues siendo mi lugar seguro.<br>
+      <br>
+      Porque contigo nunca siento que tengo que fingir ser alguien más.<br>
+      <br>
+      Contigo puedo ser yo.<br>
+      <br>
+      Con mis miedos.<br>
+      <br>
+      Con mis inseguridades.<br>
+      <br>
+      Con mis días buenos.<br>
+      <br>
+      Y también con los malos.<br>
+      <br>
+      Gracias por hacerme sentir que nunca estoy sola.<br>
+      <br>
+      Mi deseo para tus diecisiete años no es que todo sea perfecto.<br>
+      <br>
+      Mi deseo es que nunca dejes de creer en ese niño increíble que eres hoy.<br>
+      <br>
+      Que sigas luchando por cada uno de tus sueños.<br>
+      <br>
+      Que el baloncesto siga sacándote sonrisas.<br>
+      <br>
+      Que logres estudiar donde tanto sueñas.<br>
+      <br>
+      Que nunca pierdas esa forma tan bonita de amar.<br>
+      <br>
+      Y que, pase lo que pase, nunca olvides que existe una lunita inmensamente orgullosa de ti.<br>
+      <br>
+      Ojalá, dentro de muchos años, cuando vuelvas a pensar en este cumpleaños, recuerdes también esta aventura.<br>
+      <br>
+      No porque sea un videojuego.<br>
+      <br>
+      Sino porque fue una de las muchas maneras que encontré para decirte algo que nunca me voy a cansar de repetir.<br>
+      <br>
+      Te adoro.<br>
+      <br>
+      Te amo muchísimo.<br>
+      <br>
+      Y volvería a elegirte una y mil veces más.<br>
+      <br>
+      Así que..<br>
+      <br>
+      Respira profundo.<br>
+      <br>
+      Sonríe.<br>
+      <br>
+      Y prepárate para descubrir una aventura hecha especialmente para ti.<br>
+      <br>
+      Feliz cumpleaños, mi solecito hermoso.🎂<br>
+      <br>
+      Que estos diecisiete años sean el comienzo de una etapa llena de sueños cumplidos, de risas, de aprendizajes y de muchísimos momentos bonitos. Y, si Dios nos lo permite, ojalá yo tenga la fortuna de acompañarte en muchísimos cumpleaños más.<br>
+      <br>
+      Con todo mi amor<br>
+      <br>
+      Siempre tu lunita. 🌙 💞<br>
+    </div>
+    <button class="paper-btn" style="margin-top:18px;" onclick="goBack()">Volver</button>
+  </section>
+
+  <section class="scene" id="scene-songs">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <h2>Canciones que me recuerdan a ti</h2>
+    <div class="song-grid">
+      <div class="song-card" onclick="window.open('https://open.spotify.com/track/0YImOCkIJ2PWhCXaURCZnY','_blank')">
+        <div class="song-cover"><img src="images/cancion4.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="song-info">
+          <div class="song-title">I Know What You Want</div>
+          <div class="song-artist">Busta Rhymes</div>
+        </div>
+        <div class="song-note">Tú brillando en la cancha y yo siendo tu fan número 1. 🏀</div>
+      </div>
+      <div class="song-card" onclick="window.open('https://open.spotify.com/track/4k3xDpAdBuM17mNNHhOZkK','_blank')">
+        <div class="song-cover"><img src="images/cancion3.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="song-info">
+          <div class="song-title">nuts</div>
+          <div class="song-artist">Lil Peep, rainy bear</div>
+        </div>
+        <div class="song-note">Porque describe perfectamente lo real, intenso y único que es lo nuestro.</div>
+      </div>
+      <div class="song-card" onclick="window.open('https://open.spotify.com/track/34bgCQVr0Wfuthiv8NeSQO','_blank')">
+        <div class="song-cover"><img src="images/cancion2.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="song-info">
+          <div class="song-title">WO OH OH</div>
+          <div class="song-artist">Omar Courtz, ROA</div>
+        </div>
+        <div class="song-note">"Tu eres el amor de mi vida de esos que ya quedan pocos" estamos unidos por el hilo rojo💞</div>
+      </div>
+      <div class="song-card" onclick="window.open('https://open.spotify.com/track/5fdNHVZHbWB1AaXk4RBGVD','_blank')">
+        <div class="song-cover"><img src="images/cancion1.jpg" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="song-info">
+          <div class="song-title">Just the Two of Us</div>
+          <div class="song-artist">Grover Washington,Jr., Bill Withers</div>
+        </div>
+        <div class="song-note">La primera canción que me dedicaste...</div>
+      </div>
+    </div>
+    <button class="paper-btn" style="margin-top:18px;" onclick="goBack()">Volver</button>
+  </section>
+
+  <section class="scene" id="scene-pokeball-intro">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <h2>Uno de estos amuletos contiene tu regalo</h2>
+    <div class="pokeball-grid" id="pokeball-grid"></div>
+  </section>
+
+  <section class="scene" id="scene-pokeball-wrong">
+    <h1 style="margin-top:80px;">¡Oh no! Amuleto<br>incorrecto.<br>Vuelve a intentarlo...</h1>
+    <button class="paper-btn" style="margin-top:30px;" onclick="go('scene-pokeball-intro')">Try again</button>
+  </section>
+
+  <section class="scene" id="scene-pokeball-found">
+    <h1 style="margin-top:40px;">¡Felicidades! Has encontrado<br>el amuleto correcto<br>¡Pulsa en él!</h1>
+    <div class="big-pokeball" id="big-pokeball" onclick="go('scene-pokemon-card')"></div>
+  </section>
+
+  <section class="scene" id="scene-pokemon-card">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <div class="poke-card">
+      <div class="poke-card-photo"></div>
+      <div class="poke-card-title">Mi pequeño caballero...</div>
+      <div class="poke-card-text">
+      Como quien atraviesa Hallownest entero sin miedo, quien no se rinde ante
+      ningún jefe. Eres mi hogar en medio del Vacío. Te elijo a ti, una y otra
+      vez💕
+      </div>
+    </div>
+    <button class="paper-btn" onclick="go('scene-hub')">Volver</button>
+  </section>
+
+  <section class="scene" id="scene-tickets-rules">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <h2 style="margin-top:20px;">Por último pero no menos importante...<br>tiene normas:</h2>
+    <div class="rules-list">
+      1. Un solo uso.<br>
+      2. Se pueden usar cuando quieras.
+    </div>
+    <div class="choice-row">
+      <button class="paper-btn" onclick="go('scene-tickets')">Aceptar</button>
+      <button class="paper-btn secondary" onclick="go('scene-denied-tickets')">Denegar</button>
+    </div>
+  </section>
+
+  <section class="scene" id="scene-denied-tickets">
+    <h1 style="margin-top:80px;">Va porfi, inténtalo...</h1>
+    <div class="choice-row" style="margin-top:40px;">
+      <button class="paper-btn" onclick="go('scene-tickets')">Está bien</button>
+    </div>
+  </section>
+
+  <section class="scene" id="scene-tickets">
+    <div class="topbar">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <div class="dots"></div>
+    </div>
+    <h2>Elige solo 1 ticket</h2>
+    <div class="ticket-grid" id="ticket-grid">
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Hacer un picnic</div>
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Un día de sí a todo</div>
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Terminar una discusión</div>
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Tener una piyamada</div>
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Darte muchos besitos</div>
+      <div class="ticket" onclick="selectTicket(this)"><span class="ticket-label">Ticket</span>Ir a jugar basket</div>
+    </div>
+  </section>
+
+  <section class="scene" id="scene-final">
+    <h1 style="margin-top:120px;">Espero te haya gustado 💗</h1>
+    <button class="paper-btn" style="margin-top:30px;" onclick="restart()">Volver a jugar</button>
+  </section>
+
+</div>
+
+<script>
+
+/* ============================================================
+   MÚSICA DE FONDO
+   ============================================================ */
+const bgMusic = document.getElementById('bg-music');
+const muteBtn = document.getElementById('mute-btn');
+let musicStarted = false;
+
+function startMusicOnce(){
+  if(musicStarted) return;
+  musicStarted = true;
+  bgMusic.volume = 0.5; // 👉 sube o baja este valor (0 a 1) para el volumen inicial
+  bgMusic.play().catch(() => {
+    // si el navegador bloquea el autoplay, no pasa nada, el botón sigue disponible
+  });
+}
+
+function toggleMusic(){
+  if(bgMusic.paused){
+    bgMusic.play();
+    muteBtn.textContent = '🔊';
+  } else {
+    bgMusic.pause();
+    muteBtn.textContent = '🔇';
+  }
+}
+
+// Los navegadores exigen que el audio empiece tras una acción del usuario (un clic).
+// Como "Empezar"/"Denegar" ya son clics reales, aprovechamos ese primer clic para arrancar la música.
+document.addEventListener('click', startMusicOnce, { once: true });
+
+let history_ = ['scene-intro'];
+let giftsOpened = { letter:false, songs:false, pokeball:false, tickets:false };
+
+function go(id){
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  history_.push(id);
+  refreshHubUI();
+}
+
+function goBack(){
+  if(history_.length > 1){
+    history_.pop();
+    const prev = history_[history_.length - 1];
+    document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+    document.getElementById(prev).classList.add('active');
+  }
+  refreshHubUI();
+}
+
+function restart(){
+  if(confettiInterval) clearInterval(confettiInterval);
+  document.getElementById('scene-final').querySelectorAll('.confetti-piece').forEach(p => p.remove());
+  giftsOpened = { letter:false, songs:false, pokeball:false, tickets:false };
+  document.querySelectorAll('.ticket').forEach(t => t.classList.remove('selected','faded'));
+  document.querySelectorAll('.gift-card').forEach(c => c.classList.remove('completed'));
+  history_ = ['scene-intro'];
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  document.getElementById('scene-intro').classList.add('active');
+  refreshHubUI();
+}
+
+function openGift(key){
+  giftsOpened[key] = true;
+  document.getElementById('card-' + key).classList.add('completed');
+
+  if(key === 'letter')   go('scene-letter');
+  if(key === 'songs')    go('scene-songs');
+  if(key === 'pokeball') { setupPokeballs(); go('scene-pokeball-intro'); }
+  if(key === 'tickets')  go('scene-tickets-rules');
+
+  refreshHubUI();
+}
+
+function refreshHubUI(){
+  const allDone = Object.values(giftsOpened).every(v => v);
+  const finishBtn = document.getElementById('finish-btn');
+  if(finishBtn) finishBtn.style.display = allDone ? 'inline-block' : 'none';
+
+  const dotsWrap = document.getElementById('hub-dots');
+  if(dotsWrap){
+    dotsWrap.innerHTML = '';
+    Object.values(giftsOpened).forEach(done => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (done ? ' done' : '');
+      dotsWrap.appendChild(d);
+    });
+  }
+}
+
+function openLetter(){
+  document.getElementById('letter-text').classList.add('show');
+  document.getElementById('envelope').style.display = 'none';
+}
+
+const pokeballImages = [
+  'images/a1.png',
+  'images/b1.png',
+  'images/c1.png',
+  'images/d1.png',
+  'images/e1.png',
+  'images/f1.png',
+  'images/g1.png',
+  'images/h1.png',
+  'images/i1.png',
+];
+
+let correctIndex = 0;
+let triedWrong = [];
+
+function setupPokeballs(){
+  const grid = document.getElementById('pokeball-grid');
+  grid.innerHTML = '';
+  triedWrong = [];
+  const total = pokeballImages.length;
+  correctIndex = Math.floor(Math.random() * total);
+
+  for(let i = 0; i < total; i++){
+    const ball = document.createElement('div');
+    ball.className = 'pokeball';
+    ball.id = 'ball-' + i;
+    if(pokeballImages[i]){
+      ball.style.backgroundImage = `url('${pokeballImages[i]}')`;
+      ball.style.backgroundSize = 'cover';
+    }
+    ball.onclick = () => pickPokeball(i);
+    grid.appendChild(ball);
+  }
+}
+
+function pickPokeball(i){
+  if(i === correctIndex){
+    const bigBall = document.getElementById('big-pokeball');
+    if(pokeballImages[i]){
+      bigBall.style.backgroundImage = `url('${pokeballImages[i]}')`;
+      bigBall.style.backgroundSize = 'cover';
+    }
+    go('scene-pokeball-found');
+  } else {
+    if(!triedWrong.includes(i)) triedWrong.push(i);
+    go('scene-pokeball-wrong');
+  }
+}
+
+function selectTicket(el){
+  const all = document.querySelectorAll('#ticket-grid .ticket');
+  all.forEach(t => t.classList.add('faded'));
+  el.classList.remove('faded');
+  el.classList.add('selected');
+  giftsOpened.tickets = true;
+  document.getElementById('card-tickets').classList.add('completed');
+
+  setTimeout(() => { go('scene-final'); }, 700);
+}
+
+// al volver a la pantalla de amuletos, las que ya fallaste quedan marcadas y bloqueadas
+const originalGo = go;
+go = function(id){
+  originalGo(id);
+  if(id === 'scene-pokeball-intro'){
+    triedWrong.forEach(i => {
+      const el = document.getElementById('ball-' + i);
+      if(el) el.classList.add('tried');
+    });
+  }
+  if(id === 'scene-final'){
+    spawnConfetti();
+  }
+};
+
+/* ============================================================
+   CONFETI / CORAZONES CAYENDO
+   ============================================================ */
+// 👉 Cambia estos símbolos por los que quieras (emojis o texto corto)
+const confettiSymbols = ['💗','💕','✨','🎉','💖'];
+let confettiInterval = null;
+
+function spawnConfetti(){
+  const scene = document.getElementById('scene-final');
+  // limpia cualquier corazón anterior antes de empezar de nuevo
+  scene.querySelectorAll('.confetti-piece').forEach(p => p.remove());
+  if(confettiInterval) clearInterval(confettiInterval);
+
+  function createPiece(){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.textContent = confettiSymbols[Math.floor(Math.random() * confettiSymbols.length)];
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.fontSize = (16 + Math.random() * 14) + 'px';
+    const duration = 3 + Math.random() * 2.5;
+    piece.style.animationDuration = duration + 's';
+    scene.appendChild(piece);
+    // se elimina solo cuando termina de caer, para no acumular elementos
+    setTimeout(() => piece.remove(), duration * 1000);
+  }
+
+  // lanza un puñado inicial y luego sigue goteando corazones mientras estés en esta pantalla
+  for(let i = 0; i < 18; i++){
+    setTimeout(createPiece, i * 120);
+  }
+  confettiInterval = setInterval(createPiece, 350);
+}
+
+refreshHubUI();
+
+</script>
+</body>
+</html>
